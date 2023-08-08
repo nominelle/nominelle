@@ -1,0 +1,220 @@
+Tutorial - Google Maps API
+
+Vid användning av Google Maps API behöver du ett dokument för att skriva HTML där Google Maps 
+API kan skrivas som javascript. Jag kan därför rekommendera att du använder ett ASP.NET projekt för 
+en webapplikation där du arbetar i en vald vy för presentation av kartan.
+Google Maps API
+Här kan du registrera dig eller logga in med ditt Google konto för en Google Maps API nyckel:
+https://console.cloud.google.com/project/_/google/maps-apis/overview
+För att påbörja användningen av Googles Maps API tjänst behöver du en användare i form av ett 
+Google konto för att registrera dig och tillhandahålla en API nyckel som sedan kan användas vid själva 
+kodningen i ASP.NET MVC Core. Gratisversionen ger dig 28500 Google Maps API förfrågningar per 
+månad vilket inte överskrider gränsen vid lättare utveckling som i denna tutorial. Nyckeln gör att du 
+kan hämta kartan och funktioner ifrån Google Maps API som genereras med hjälp av javascript i din 
+webbapplikation/Html webbsida.
+Detta kan se ut enligt följande i en ASP.NET vy (html dokument) med JavaScript där stjärnorna visar 
+var du lägger in din API nyckel:
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=*****&callback=initMap">
+</script>
+Sammanhanget kommer att klarna senare men du kan notera att &callback=initMap visas i slutet 
+av denna kodrad som blir tydligare i första instruktionen på nästa sida.
+1. Att presentera kartan
+Nedan visas ett kodexempel på hur kartan kan presenteras i en vy som htmlkod med hjälp av javascript skrivet inom divtaggar. Denna kod har en källa(src)
+till ett färdigskrivet och komprimerat javascript även kallat bootstrap1
+som
+underlättar för utvecklare som i detta fall hanterar google maps funktionalitet 
+och visning:
+<div class="wallpaper">
+ <div class="center" id="map"></div>
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-
+beta.3/js/bootstrap.min.js"></script>
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=*NYCKEL*&callback=initMap">
+</script>
+<script>
+ var map;
+function initMap() {
+ map = new google.maps.Map(document.getElementById('map'), {
+ center: { lat: 62.3908111, lng: 17.306926999999973 },
+ zoom: 13
+ });
+}
+ </script>
+ </div>
+Att kopiera denna kod att använda sig av visar hur enkelt det är att visa kartan
+med den tillhörande bootstrap för javascript funktionen ”initMap()” som är en 
+callback ifrån API nyckeln. 
+För att visa kartan är det förutsett att du har en API *NYCKEL*.
+Däremot så kräver det mer tid att skriva javascriptet själv för att skapa 
+funktionerna som jag tänkte gå in närmare på i denna tutorial. 
+Jag visar också hur det går att kombinera Google Maps API med en 
+egenutvecklad API för att hantera objekt ifrån en databas till kartan.
+Utmaningen med Google Maps API är att anpassa till eget bruk och önskat 
+resultat.
+1 bootstrap/LICENSE at main · twbs/bootstrap · GitHub
+2. Att skapa en funktion
+För att visa ett exempel på hur koden ser ut i javascript format för en funktion till Google 
+Maps API ges ett exempel nedan. Här visas tidigare funktion i kod som inte var synlig i 
+javascript format eftersom vi använde oss av en bootstrap för initMap(). Detta kan skrivas 
+enligt kodexemplet nedan i en .js fil tillhörande webbapplikationen som är länkad precis som 
+bootstrapens ”src” i exemplet på förra sidan för att användas som <script></script> i Html.
+Om så önskas kan scriptet skrivas direkt i HTML inom taggarna. En tillhörande CSS visas 
+också längre ned:
+// Initialize and add the map
+function initMap() {
+ // The location of Uluru
+ const uluru = { lat: -25.344, lng: 131.031 };
+ // The map, centered at Uluru
+ const map = new google.maps.Map(document.getElementById("map"), {
+ zoom: 4,
+ center: uluru,
+ });
+ // The marker, positioned at Uluru
+ const marker = new google.maps.Marker({
+ position: uluru,
+ map: map,
+ });
+}
+window.initMap = initMap;
+Detta kan också då modifieras ytterligare i en CSS med id=”map” för divtaggar med kartans 
+storlek i form av height / width:
+#map {
+ height: 400px;
+ /* The height is 400 pixels */
+ width: 100%;
+ /* The width is the width of the web page */
+}
+zoom: Väljer önskad grad av visningen av kartan inzoomad (högre värden) eller utzoomad
+(lägre värden)
+center: Centrerar kartans utgångsläge för i detta fall vald konstant(const) Uluru med 
+tillhörande Gps koordinater i latitude (lat) och longitude (lng).
+postition: Väljer var på kartan markören placeras
+map: Väljer vald ny karta med variabelnamn, i exemplet ovan är map variabelnamnet
+new google.maps.Marker: Skapar ett marker objekt
+new google.maps.Map(document.getElementById("map"): Skapar en ny karta
+Som ni märker är alla dessa förfrågningar med konstanter(const) eller i form av variabler(var)
+möjligt att deklarera själva som kan redigeras till eget önskat resultat. Exempelvis Uluru kan 
+heta Stockholm där koordinater kan läggas till. Detta förstår Google Maps API JavaScript.
+3. Att anpassa kartan med funktioner till önskat resultat
+För att förtydliga utgångsläget och få lite ordning på koden går det att skapa en variabel 
+options istället för att skriva ut visningens värden direkt i den tillagda kartan. Detta kan göras 
+enligt nedan.
+var options = {
+ zoom: 14,
+ center: { lat: 62.3908111, lng: 17.306926999999973 }
+ }
+ map = new google.maps.Map(document.getElementById('map'), options );
+Ytterligare funktioner som Google Maps API ger oss:
+Nedan visas hur en informationsruta skapas:
+var Info = new google.maps.InfoWindow({ 
+content: Ange innehåll här
+});
+Nedan visas hur du kopplar informationsrutan till en marker med funktionen mouseover 
+som gör att inforutan visas när du för muspekaren över markern på kartan. Det går även att 
+ändra till click för att visa informationsrutan genom att klicka med musknappen på markern:
+marker.addListener('mouseover', function() { Info.open(map, marker); });
+4. Att anpassa Google Maps API
+Nu när det mest grundläggande presenterats kommer jag att visa hur det går att börja 
+använda Google Maps API för att anpassa till önskat resultat. 
+Detta kräver grunder inom ASP.NET MVC Core WEB/API samt HTML, CSS och Javascript.
+Enligt kodexemplet nedan är det möjligt att med funktionen addCustom() lägga till flera olika 
+markörer med specifika värden som sedan kan genereras med if satser inom funktionen. 
+Funktionen använder sig av props som kan hämta värden ifrån de skapade markörerna med 
+dess innehåll. 
+coords: En egen namngiven variabel för att hämta koordinaterna i de skapade addCustom() 
+ovan funktionen addcustom(props). 
+Icon / iconImage: Gör det möjligt att lägga till en länk om en specifik ikon för en marker.
+props: Hämtar information om coords, iconImage och content med hjälp av if satserna.
+ addCustom({
+ coords: { lat: 62.40178270370007, lng: 17.290789756051844 },
+ iconImage: 
+'https://developers.google.com/maps/documentation/javascript/examples/full/images
+/beachflag.png',
+ content: '<h1>Norra Berget</h1>'
+ });
+ addCustom({ coords: { lat: 62.42002270370007, lng: 17.293729756051844 }, 
+ content: '<h1>Skogen</h1>'
+ });
+ function addCustom(props) {
+ var customMarker = new google.maps.Marker({
+ position: props.coords,
+ map: map,
+ });
+ // Check for custom Icon
+ if (props.iconImage) {
+ // Set IconImage
+ customMarker.setIcon(props.iconImage);
+ }
+ if (props.content) {
+ var infoWindow = new google.maps.InfoWindow({
+ content:props.content
+ });
+ customMarker.addListener('click', function() {
+ infoWindow.open(map, customMarker);
+ });
+ }
+ 
+ }
+Koden tidigare presenterat gör det möjligt för en utvecklare att använda egna 
+variabler exempelvis med hjälp av model-binding och egna utvecklade 
+parametrar skicka objekt.
+(Det är noga med , kommatecken efter varje tillskrivning av attribut men inget 
+kommatecken behövs vid sista parametern) 
+Detta kan se ut enligt följande för funktionen addCustom med en @foreach 
+förutsett att tidigare modell är skapad för att hämta värden ifrån databasen:
+@foreach(var item in model){
+string? Lat = item.Lat;
+string? Long = item.Long;
+addCustom({
+ coords: { lat: @lat, lng: @long },
+ iconImage: 
+'https://developers.google.com/maps/documentation/javascript/examples/full/images
+/beachflag.png',
+ content: @content
+}
+Nu börjar den kreativa processen. Härifrån är det möjligt att bygga för önskat 
+resultat men det är värt att nämna vid detta exempel ovan att koden är skriven 
+för att också kunna anpassas för ett eventuellt formulär. 
+Med det menar jag att en sändning av item.latitude inte blir ett bra 
+modellnamn för ett formulärdata. Däremot @lat skickar endast lat som 
+överenstämmer med denna modellens struktur som ser ut enligt följande:
+string? Lat {get; set; } 
+string? Long {get; set;}.
+Det går att skriva på det här viset också i en foreachloop: 
+coords: { lat: item.Lat, lng: item.Long }
+Nedan visas ett exempel på delar av kod i en vy i ASP.NET kan se ut för att 
+skicka SubjectId med ett formulär ifrån en lista för att visa på en karta:
+@foreach (var item in Model) {
+int? SubjectId = item.SubjectId;
+<tr>
+<td id="subject2">
+@Html.DisplayFor(modelItem => item.LoginName)
+</td>
+<td id="subject">
+@Html.DisplayFor(modelItem => item.SetSubject)
+</td>
+<td id="subject2">
+@Html.DisplayFor(modelItem => item.SubjectId)
+</td>
+<td id="subject2">
+@Html.DisplayFor(modelItem => item.MoodText)
+</td>
+<td id="subject2">
+@Html.DisplayFor(modelItem => item.Lat)
+</td>
+<td id="subject2">
+@Html.DisplayFor(modelItem => item.Long)
+</td>
+<td>
+<form asp-action="Search">
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<input asp-for="@SubjectId" class="form-control" hidden="true" />
+<span asp-validation-for="@SubjectId" class="text-danger" hidden="true"></span>
+<input type="submit" value="Search" class="buttonstyleblue" />
+</form>
+</td>
+</tr>
+}
